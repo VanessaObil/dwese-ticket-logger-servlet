@@ -15,7 +15,7 @@
        <tbody>
            <c:forEach var="province" items="${listProvinces}">
                <tr>
-                   <td>${province.id}</td>
+                   <td>${province.regionId}</td>
                    <td>${province.code}</td>
                    <td>${province.name}</td>
                    <td>

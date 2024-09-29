@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 // que requieren un constructor vacío para la creación de entidades.
 
 
-@AllArgsConstructor  // Esta anotación genera un constructor que acepta todos los campos como parámetros (id, code, name).
+//@AllArgsConstructor  // Esta anotación genera un constructor que acepta todos los campos como parámetros (id, code, name).
 // Este constructor es útil cuando necesitas crear una instancia completamente inicializada de `Region`.
 // Ejemplo: new Region(1, "01", "Andalucía");
 
@@ -53,20 +53,81 @@ public class Province {
 
     /**
      * Este es un constructor personalizado que no incluye el campo `id`.
-     * Se utiliza para crear instancias de `Region` cuando no es necesario o no se conoce el `id` de la región
+     * Se utiliza para crear instancias de `Province` cuando no es necesario o no se conoce el `id` de la provincia
      * (por ejemplo, antes de insertar la región en la base de datos, donde el `id` es autogenerado).
-     * @param code Código de la región.
-     * @param name Nombre de la región.
+     * @param code Código de la provincia.
+     * @param name Nombre de la provincia.
      */
     public Province(String code, String name) {
         this.code = code;
         this.name = name;
     }
 
+    /**
+     * Este es un constructor personalizado que incluye todos lños atributos de Province.
+     * Se utiliza para crear instancias de 'Province' en donde es necesario conocer todos los valores
+     * de los atributos.
+     * (Por ejemplo, cuando se inserta una nueva provincia en la bsae de datos)
+     * @param id id de la provincia.
+     * @param code Código de la provincia.
+     * @param name Nombre de la provincia.
+     * @param region Región a la que pertenece la provincia.
+     */
     public Province(int id, String code, String name, Region region) {
         this.id = id;
         this.code = code;
         this.name = name;
         this.region = region;
     }
+
+    /**
+     * Este es un constructor personalizado que no incluye el compo 'id' de Province pero sí incluye
+     * el campo 'region'.
+     * Se utiliza para edaitar una provincia de la base de datos y ya se conoce el 'id' de la provincia
+     * @param code Código de la provincia.
+     * @param name Nombre de la provincia.
+     * @param region Región a la que pertenece la provincia.
+     */
+    public Province(String code, String name, Region region) {
+        this.code = code;
+        this.name = name;
+        this.region = region;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
+    }
+
+    public int getRegionId() {
+        return  region.getId();
+    }
+
 }

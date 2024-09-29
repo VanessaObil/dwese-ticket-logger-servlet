@@ -111,7 +111,7 @@ public class RegionDAOImpl implements RegionDAO {
             if (resultSet.next()) {
                 String code = resultSet.getString("code");
                 String name = resultSet.getString("name");
-                region = new Region(id, code, name);
+                region = new Region(id,code, name);
             }
         }
         return region;

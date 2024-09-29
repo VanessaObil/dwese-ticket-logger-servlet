@@ -12,16 +12,17 @@ public class ProvinceDAOImpl implements ProvinceDAO {
 
 
     /**
-     * Lista todas las regiones de la base de datos.
-     * @return Lista de regiones
+     * Lista todas las provincias de la base de datos.
+     * @return Lista de provincias
      * @throws SQLException
      */
     public List<Province> listAllProvinces() throws SQLException {
         List<Province> provinces = new ArrayList<>();
-        String query = "SELECT p.id AS id_province, p.code, p.name " +
-                "r.id AS id_region, r.code_region, r.name_region" +
+        String query = "SELECT p.id AS id_province, p.code, p.name, " +
+                "r.id AS id_region, r.code AS code_region, r.name AS name_region " +
                 "FROM provinces p " +
-                "INNER JOIN regions r ON p.id_region = r.id";
+                "JOIN regions r ON p.id_region = r.id";
+
 
         try (Connection connection = DatabaseConnectionManager.getConnection();
              Statement statement = connection.createStatement();
@@ -36,38 +37,44 @@ public class ProvinceDAOImpl implements ProvinceDAO {
                 int id_region = resultSet.getInt("id_region");
                 String code_region = resultSet.getString("code_region");
                 String name_region = resultSet.getString("name_region");
-                Region region = new Region(id_region, code_region, name_region);
+
+                Region region = new Region(id_region,code_region,name_region);
 
                 // Crear un objeto Province que incluye el objeto Region
-                provinces.add(new Province(provinceId, provinceCode, provinceName, region));
+                provinces.add(new Province(provinceId, provinceCode, provinceName,region));
             }
         }
         return provinces;
     }
 
 
-
+    /**
+     * Inserta una nueva provincia en la tabla provincies de la base de datos
+     * @param province provincia a insertar
+     * @throws SQLException
+     */
 
 
     public void insertProvince(Province province) throws SQLException {
-        String query = "INSERT INTO provinces (code, name, id_region) VALUES (?, ?, ?)";
+        String query = "INSERT INTO provinces (code, name, id_region) VALUES (?, ?, ?)"; // Ajusta la consulta SQL según tu esquema
 
 
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (Connection connection = DatabaseConnectionManager.getConnection(); // Obtén la conexión a la base de datos
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) { // Prepara la declaración SQL
 
 
-            preparedStatement.setString(1, province.getCode());
-            preparedStatement.setString(2, province.getName());
-
-            preparedStatement.executeUpdate();
+            preparedStatement.setString(1, province.getCode());  // Asigna el código de la provincia
+            preparedStatement.setString(2, province.getName());  // Asigna el nombre de la provincia
+            preparedStatement.setInt(3, province.getRegion().getId());  // Asigna el ID de la región
+            preparedStatement.executeUpdate();  // Ejecuta la consulta de inserción
         }
     }
 
 
+
     /**
-     * Actualiza una región existente en la base de datos.
-     * @param region Región a actualizar
+     * Actualiza una provincia existente en la base de datos.
+     * @param province Provincia a actualizar
      * @throws SQLException
      */
     public void updateProvince(Province province) throws SQLException {
@@ -76,18 +83,20 @@ public class ProvinceDAOImpl implements ProvinceDAO {
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
 
-            preparedStatement.setString(1, province.getCode());
-            preparedStatement.setString(2, province.getName());
-            preparedStatement.setInt(3, province.getId());
-            preparedStatement.executeUpdate();
+            preparedStatement.setString(1, province.getCode());  // Asigna el código de la provincia
+            preparedStatement.setString(2, province.getName());  // Asigna el nombre de la provincia
+            preparedStatement.setInt(3, province.getRegion().getId());  // Asigna el ID de la región
+            preparedStatement.executeUpdate();  // Ejecuta la consulta de inserción
+
+
         }
     }
 
 
     /**
-     * Elimina una región de la base de datos.
-     * @param id ID de la región a eliminar
-     * @throws SQLException
+     * Elimina una provincia de la base de datos.
+     * @param id ID de la provincias a eliminar
+     * @throws SQLException  si ocurre un error en la consulta SQL
      */
     public void deleteProvince(int id) throws SQLException {
         String query = "DELETE FROM provinces WHERE id = ?";
@@ -102,40 +111,51 @@ public class ProvinceDAOImpl implements ProvinceDAO {
 
 
     /**
-     * Verifica si una región con el código especificado ya existe en la base de datos,
+     * Verifica si una provincia con el código especificado ya existe en la base de datos,
      * ignorando mayúsculas.
      *
-     * @param code el código de la región a verificar.
-     * @return true si una región con el código ya existe, false de lo contrario.
+     * @param id el código de la provincia a verificar.
+     * @return true si una provincia con el id ya existe, false de lo contrario.
      * @throws SQLException si ocurre un error en la consulta SQL.
      */
     public Province getProvinceById(int id) throws SQLException {
-        String query = "SELECT * FROM provinces WHERE id = ?";
+        String query = "SELECT p.*, r.id AS region_id, r.code AS region_code," +
+                " r.name AS region_name FROM provinces p LEFT JOIN regions r " +
+                "ON p.id_region = r.id WHERE p.id = ?";
+
         Province province = null;
-
-
+        Region region = null;
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
 
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 String code = resultSet.getString("code");
                 String name = resultSet.getString("name");
-                province = new Province(id, code, name);
+
+                int regionId = resultSet.getInt("region_id");
+
+                String regionCode = resultSet.getString("region_code");
+                String regionName = resultSet.getString("region_name");
+                region = new Region(regionId, regionCode, regionName);
+
+                province = new Province(id, code, name, region);
             }
         }
         return province;
     }
 
 
+
+
+
     /**
-     * Verifica si una región con el código especificado ya existe en la base de datos,
+     * Verifica si una provincia con el código especificado ya existe en la base de datos,
      * ignorando mayúsculas.
      *
-     * @param code el código de la región a verificar.
-     * @return true si una región con el código ya existe, false de lo contrario.
+     * @param code el código de la provincia a verificar.
+     * @return true si una provincia con el código ya existe, false de lo contrario.
      * @throws SQLException si ocurre un error en la consulta SQL.
      */
     @Override
@@ -153,12 +173,12 @@ public class ProvinceDAOImpl implements ProvinceDAO {
 
 
     /**
-     * Verifica si una región con el código especificado ya existe en la base de datos,
-     * ignorando mayúsculas, pero excluyendo una región con un ID específico.
+     * Verifica si una provincia con el código especificado ya existe en la base de datos,
+     * ignorando mayúsculas, pero excluyendo una provincia con un ID específico.
      *
-     * @param code el código de la región a verificar.
-     * @param id   el ID de la región a excluir de la verificación.
-     * @return true si una región con el código ya existe (y no es la región con el ID dado),
+     * @param code el código de la provincia a verificar.
+     * @param id   el ID de la provincias a excluir de la verificación.
+     * @return true si una provincia con el código ya existe (y no es la provincia con el ID dado),
      *         false de lo contrario.
      * @throws SQLException si ocurre un error en la consulta SQL.
      */
@@ -178,4 +198,3 @@ public class ProvinceDAOImpl implements ProvinceDAO {
 
 
 }
-

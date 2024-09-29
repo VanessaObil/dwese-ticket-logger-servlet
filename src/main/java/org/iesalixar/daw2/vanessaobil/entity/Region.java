@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 // que requieren un constructor vacío para la creación de entidades.
 
 
-@AllArgsConstructor  // Esta anotación genera un constructor que acepta todos los campos como parámetros (id, code, name).
+//@AllArgsConstructor  // Esta anotación genera un constructor que acepta todos los campos como parámetros (id, code, name).
 // Este constructor es útil cuando necesitas crear una instancia completamente inicializada de `Region`.
 // Ejemplo: new Region(1, "01", "Andalucía");
 
@@ -49,6 +49,7 @@ public class Region {
     private String name;
 
 
+
     /**
      * Este es un constructor personalizado que no incluye el campo `id`.
      * Se utiliza para crear instancias de `Region` cuando no es necesario o no se conoce el `id` de la región
@@ -56,8 +57,40 @@ public class Region {
      * @param code Código de la región.
      * @param name Nombre de la región.
      */
+
+
     public Region(String code, String name) {
         this.code = code;
         this.name = name;
+    }
+
+    public Region(int id,String code, String name) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
