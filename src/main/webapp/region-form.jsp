@@ -11,6 +11,10 @@
            </c:otherwise>
        </c:choose>
    </h1>
+   <%-- Mostrar mensaje de error si existe --%>
+   <c:if test="${not empty errorMessage}">
+       <div class="error-message">${errorMessage}</div>
+   </c:if>
 
 
    <form action="regions" method="post">

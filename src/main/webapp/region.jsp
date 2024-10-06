@@ -2,6 +2,8 @@
 
 
    <h1><fmt:message key="msg.region.title" /></h1>
+
+
    <a href="regions?action=new"><fmt:message key="msg.region.add" /></a>
    <table border="1">
        <thead>

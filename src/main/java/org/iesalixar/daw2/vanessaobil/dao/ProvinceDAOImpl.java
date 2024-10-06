@@ -78,17 +78,16 @@ public class ProvinceDAOImpl implements ProvinceDAO {
      * @throws SQLException
      */
     public void updateProvince(Province province) throws SQLException {
-        String query = "UPDATE provinces SET code = ?, name = ? WHERE id = ?";
+        String query = "UPDATE provinces SET code = ?, name = ?, id_region = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
+            preparedStatement.setString(1, province.getCode());
+            preparedStatement.setString(2, province.getName());
 
-            preparedStatement.setString(1, province.getCode());  // Asigna el código de la provincia
-            preparedStatement.setString(2, province.getName());  // Asigna el nombre de la provincia
-            preparedStatement.setInt(3, province.getRegion().getId());  // Asigna el ID de la región
-            preparedStatement.executeUpdate();  // Ejecuta la consulta de inserción
-
-
+            preparedStatement.setInt(3, province.getRegion().getId());
+            preparedStatement.setInt(4, province.getId());
+            preparedStatement.executeUpdate();
         }
     }
 

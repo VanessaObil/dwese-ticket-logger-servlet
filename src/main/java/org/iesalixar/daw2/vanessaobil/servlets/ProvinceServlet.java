@@ -188,7 +188,7 @@ public class ProvinceServlet extends HttpServlet {
             idRegion = Integer.parseInt((request.getParameter("id_region"))); // Obtén el ID de la región
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage", "ID de región no válido.");
-            request.getRequestDispatcher("province-form.jsp").forward(request, response);
+            insertProvince(request, response);
             return;
         }
 
@@ -300,4 +300,3 @@ public class ProvinceServlet extends HttpServlet {
         response.sendRedirect("provinces"); // Redirigir al listado de provincias
     }
 }
-
