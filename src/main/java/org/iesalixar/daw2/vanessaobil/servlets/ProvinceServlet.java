@@ -188,7 +188,7 @@ public class ProvinceServlet extends HttpServlet {
             idRegion = Integer.parseInt((request.getParameter("id_region"))); // Obtén el ID de la región
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage", "ID de región no válido.");
-            insertProvince(request, response);
+            request.getRequestDispatcher("province-form.jsp").forward(request, response);
             return;
         }
 
