@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -23,6 +25,7 @@ import java.util.List;
 @WebServlet("/regions")
 public class RegionServlet extends HttpServlet {
 
+    private static final Logger logger = LoggerFactory.getLogger(RegionDAOImpl.class);
 
     // DAO para gestionar las operaciones de las regiones en la base de datos
     private RegionDAO regionDAO;
@@ -31,8 +34,10 @@ public class RegionServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         try {
+            logger.info("Inicializando el DAO");
             regionDAO = new RegionDAOImpl();
         } catch (Exception e) {
+            logger.error( "Error al iniciar el DAO");
             throw new ServletException("Error al inicializar el RegionDAO", e);
         }
     }
@@ -62,16 +67,20 @@ public class RegionServlet extends HttpServlet {
 
             switch (action) {
                 case "new":
+                    logger.info("Mostrando formulario Nueva Region");
                     showNewForm(request, response);  // Mostrar formulario para nueva región
                     break;
                 case "edit":
+                    logger.info("Mostrando formulario Editar Region");
                     showEditForm(request, response);  // Mostrar formulario para editar región
                     break;
                 default:
+                    logger.info("Listando Regiones");
                     listRegions(request, response);   // Listar todas las regiones
                     break;
             }
         } catch (SQLException ex) {
+            logger.error("Error en la solicitud");
             throw new ServletException(ex);
         }
     }
@@ -91,19 +100,24 @@ public class RegionServlet extends HttpServlet {
         try {
             switch (action) {
                 case "insert":
+                    logger.info("Insertando nueva region");
                     insertRegion(request, response);  // Insertar nueva región
                     break;
                 case "update":
+                    logger.info("Actualizando  region");
                     updateRegion(request, response);  // Actualizar región existente
                     break;
                 case "delete":
+                    logger.info("Eliminando region");
                     deleteRegion(request, response);  // Eliminar región
                     break;
                 default:
+                    logger.info("Mostrando region");
                     listRegions(request, response);   // Listar todas las regiones
                     break;
             }
         } catch (SQLException ex) {
+            logger.error("Error en la solicitud post");
             throw new ServletException(ex);
         }
     }
@@ -174,6 +188,7 @@ public class RegionServlet extends HttpServlet {
 
         // Validaciones básicas
         if (code.isEmpty() || name.isEmpty()) {
+            logger.warn("El código y el nombre no pueden estar vacíos.");
             request.setAttribute("errorMessage", "El código y el nombre no pueden estar vacíos.");
             request.getRequestDispatcher("region-form.jsp").forward(request, response);
             return;
@@ -182,6 +197,7 @@ public class RegionServlet extends HttpServlet {
 
         // Validar si el código ya existe ignorando mayúsculas
         if (regionDAO.existsRegionByCode(code)) {
+            logger.warn("El código de la region ya existe.");
             request.setAttribute("errorMessage", "El código de la región ya existe.");
             request.getRequestDispatcher("region-form.jsp").forward(request, response);
             return;
@@ -190,9 +206,11 @@ public class RegionServlet extends HttpServlet {
 
         Region newRegion = new Region(code, name);
         try {
+            logger.info("Insertando una region:");
             regionDAO.insertRegion(newRegion);
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) { // Código SQL para unique constraint violation
+                logger.error("El código de la región debe ser único.");
                 request.setAttribute("errorMessage", "El código de la región debe ser único.");
                 request.getRequestDispatcher("region-form.jsp").forward(request, response);
             } else {
@@ -223,6 +241,7 @@ public class RegionServlet extends HttpServlet {
 
         // Validaciones básicas
         if (code.isEmpty() || name.isEmpty()) {
+            logger.warn("El código y el nombre no pueden estar vacíos.");
             request.setAttribute("errorMessage", "El código y el nombre no pueden estar vacíos.");
             request.getRequestDispatcher("region-form.jsp").forward(request, response);
             return;
@@ -231,6 +250,7 @@ public class RegionServlet extends HttpServlet {
 
         // Validar si el código ya existe para otra región
         if (regionDAO.existsRegionByCodeAndNotId(code, id)) {
+            logger.warn("El código de la region ya existe para otra provincia.");
             request.setAttribute("errorMessage", "El código de la región ya existe para otra región.");
             request.getRequestDispatcher("region-form.jsp").forward(request, response);
             return;
@@ -242,6 +262,7 @@ public class RegionServlet extends HttpServlet {
             regionDAO.updateRegion(updatedRegion);
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) { // Código SQL para unique constraint violation
+                logger.warn("El código de la región debe ser único.");
                 request.setAttribute("errorMessage", "El código de la región debe ser único.");
                 request.getRequestDispatcher("region-form.jsp").forward(request, response);
             } else {
@@ -262,6 +283,7 @@ public class RegionServlet extends HttpServlet {
     private void deleteRegion(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
+        logger.info("Region eliminada");
         regionDAO.deleteRegion(id);  // Eliminar región usando el DAO
         response.sendRedirect("regions"); // Redirigir al listado de regiones
     }

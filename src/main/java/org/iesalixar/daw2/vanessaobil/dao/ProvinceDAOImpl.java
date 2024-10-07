@@ -6,10 +6,13 @@ import org.iesalixar.daw2.vanessaobil.entity.Region;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ProvinceDAOImpl implements ProvinceDAO {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProvinceDAOImpl.class);
 
     /**
      * Lista todas las provincias de la base de datos.
@@ -17,6 +20,7 @@ public class ProvinceDAOImpl implements ProvinceDAO {
      * @throws SQLException
      */
     public List<Province> listAllProvinces() throws SQLException {
+        logger.info("Ejecutansdo consulta para listar las provincias");
         List<Province> provinces = new ArrayList<>();
         String query = "SELECT p.id AS id_province, p.code, p.name, " +
                 "r.id AS id_region, r.code AS code_region, r.name AS name_region " +
@@ -43,6 +47,8 @@ public class ProvinceDAOImpl implements ProvinceDAO {
                 // Crear un objeto Province que incluye el objeto Region
                 provinces.add(new Province(provinceId, provinceCode, provinceName,region));
             }
+        }catch (SQLException e){
+            logger.error("Error al listar las provincias", e);
         }
         return provinces;
     }
@@ -56,17 +62,20 @@ public class ProvinceDAOImpl implements ProvinceDAO {
 
 
     public void insertProvince(Province province) throws SQLException {
-        String query = "INSERT INTO provinces (code, name, id_region) VALUES (?, ?, ?)"; // Ajusta la consulta SQL según tu esquema
+        logger.info("Insertando provincia a la lista");
+        String query = "INSERT INTO provinces (code, name, id_region) VALUES (?, ?, ?)";
 
 
-        try (Connection connection = DatabaseConnectionManager.getConnection(); // Obtén la conexión a la base de datos
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) { // Prepara la declaración SQL
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
 
-            preparedStatement.setString(1, province.getCode());  // Asigna el código de la provincia
-            preparedStatement.setString(2, province.getName());  // Asigna el nombre de la provincia
-            preparedStatement.setInt(3, province.getRegion().getId());  // Asigna el ID de la región
-            preparedStatement.executeUpdate();  // Ejecuta la consulta de inserción
+            preparedStatement.setString(1, province.getCode());
+            preparedStatement.setString(2, province.getName());
+            preparedStatement.setInt(3, province.getRegion().getId());
+            preparedStatement.executeUpdate();
+        }catch (SQLException e){
+            logger.error("Error al insertar provincia", e);
         }
     }
 
@@ -78,7 +87,9 @@ public class ProvinceDAOImpl implements ProvinceDAO {
      * @throws SQLException
      */
     public void updateProvince(Province province) throws SQLException {
+        logger.info("Actualizando provincia");
         String query = "UPDATE provinces SET code = ?, name = ?, id_region = ? WHERE id = ?";
+
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -88,6 +99,8 @@ public class ProvinceDAOImpl implements ProvinceDAO {
             preparedStatement.setInt(3, province.getRegion().getId());
             preparedStatement.setInt(4, province.getId());
             preparedStatement.executeUpdate();
+        }catch (SQLException e){
+            logger.error("Error al actualizar provincia",e);
         }
     }
 
@@ -98,6 +111,7 @@ public class ProvinceDAOImpl implements ProvinceDAO {
      * @throws SQLException  si ocurre un error en la consulta SQL
      */
     public void deleteProvince(int id) throws SQLException {
+        logger.info("Eliminando provincia");
         String query = "DELETE FROM provinces WHERE id = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -105,6 +119,8 @@ public class ProvinceDAOImpl implements ProvinceDAO {
 
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
+        }catch (SQLException e){
+            logger.error("Error al eliminar la provincia", e);
         }
     }
 

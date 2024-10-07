@@ -1,5 +1,6 @@
 <%@ include file="header.jsp" %>
 
+    <h2>Vanessa Obil Osorio</h2>
     <h1>
         <c:choose>
             <c:when test="${province == null}">

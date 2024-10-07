@@ -1,6 +1,6 @@
 <%@ include file="header.jsp" %>
 
-
+    <h2>Vanessa Obil Osorio</h2>
    <h1><fmt:message key="msg.province.title" /></h1>
    <a href="provinces?action=new"><fmt:message key="msg.province.add" /></a>
    <table border="1">

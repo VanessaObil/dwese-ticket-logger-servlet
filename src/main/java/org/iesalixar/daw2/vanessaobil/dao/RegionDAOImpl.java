@@ -6,11 +6,13 @@ import java.util.List;
 import org.iesalixar.daw2.vanessaobil.dao.DatabaseConnectionManager;
 import org.iesalixar.daw2.vanessaobil.dao.RegionDAO;
 import org.iesalixar.daw2.vanessaobil.entity.Region;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class RegionDAOImpl implements RegionDAO {
 
-
+    private static final Logger logger = LoggerFactory.getLogger(RegionDAOImpl.class);
     /**
      * Lista todas las regiones de la base de datos.
      * @return Lista de regiones
@@ -18,6 +20,7 @@ public class RegionDAOImpl implements RegionDAO {
      */
     public List<Region> listAllRegions() throws SQLException {
         List<Region> regions = new ArrayList<>();
+        logger.info("Listando regiones");
         String query = "SELECT * FROM regions";
 
 
@@ -39,6 +42,7 @@ public class RegionDAOImpl implements RegionDAO {
 
 
     public void insertRegion(Region region) throws SQLException {
+        logger.info("Insertando region");
         String query = "INSERT INTO regions (code, name) VALUES (?, ?)";
 
 
@@ -59,6 +63,7 @@ public class RegionDAOImpl implements RegionDAO {
      * @throws SQLException
      */
     public void updateRegion(Region region) throws SQLException {
+        logger.info("Actualizando region");
         String query = "UPDATE regions SET code = ?, name = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -78,6 +83,7 @@ public class RegionDAOImpl implements RegionDAO {
      * @throws SQLException
      */
     public void deleteRegion(int id) throws SQLException {
+        logger.info("Eliminando region");
         String query = "DELETE FROM regions WHERE id = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
